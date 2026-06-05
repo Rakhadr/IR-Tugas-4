@@ -1,0 +1,37 @@
+@import "tailwindcss";
+
+:root {
+  --bg:       #f5f6fa;
+  --surface:  #ffffff;
+  --surface2: #f0f1f5;
+  --border:   #e2e4ec;
+  --text:     #1a1d2e;
+  --muted:    #6b7280;
+  --accent:   #4f46e5;
+  --accent2:  #7c3aed;
+  --green:    #059669;
+  --orange:   #d97706;
+  --red:      #dc2626;
+  --blue:     #2563eb;
+  --pink:     #db2777;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: "Inter", system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--surface2); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--muted); }
+
+.recharts-cartesian-grid-horizontal line,
+.recharts-cartesian-grid-vertical line { stroke: #e2e4ec !important; }
+.recharts-text { fill: #6b7280 !important; font-size: 11px !important; }
+.recharts-legend-item-text { color: #6b7280 !important; font-size: 12px !important; }
+.recharts-tooltip-wrapper { outline: none; }
