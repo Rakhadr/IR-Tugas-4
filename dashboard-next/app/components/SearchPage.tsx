@@ -37,7 +37,7 @@ function ScoreBar({ score, max }: { score: number; max: number }) {
         <div className="h-full rounded-full" style={{ width: `${pct}%`, background: "#4f46e5" }} />
       </div>
       <span className="text-[11px] font-mono font-semibold" style={{ color: "#4f46e5" }}>
-        {score.toFixed(3)}
+        {(max > 0 ? score / max : 0).toFixed(3)}
       </span>
     </div>
   )
@@ -244,7 +244,7 @@ export default function SearchPage({ rows }: Props) {
               </code>
             ))}
             <span className="ml-auto font-medium" style={{ color: "#4f46e5" }}>
-              {results.length} hasil · top score {results[0]?._score?.toFixed(3)}
+              {results.length} hasil · top score 1.000
             </span>
           </div>
         )}
