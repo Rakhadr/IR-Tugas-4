@@ -34,7 +34,7 @@ function ScoreBar({ score, max }: { score: number; max: number }) {
   return (
     <div className="flex items-center gap-2">
       <div className="w-20 h-1.5 rounded-full overflow-hidden" style={{ background: "var(--surface2)" }}>
-        <div className="h-full rounded-full" style={{ width: `${pct}%`, background: "linear-gradient(90deg,#4f46e5,#7c3aed)" }} />
+        <div className="h-full rounded-full" style={{ width: `${pct}%`, background: "#4f46e5" }} />
       </div>
       <span className="text-[11px] font-mono font-semibold" style={{ color: "#4f46e5" }}>
         {score.toFixed(3)}
@@ -320,7 +320,7 @@ export default function SearchPage({ rows }: Props) {
                       )}
                     </div>
 
-                    {/* sekolah on mobile (below name) */}
+                    {/* sekolah on mobile */}
                     {r.sekolah && (
                       <p className="text-xs sm:hidden" style={{ color: "var(--muted)" }}>
                         <Highlight text={r.sekolah} tokens={tokens} />
@@ -421,7 +421,6 @@ export default function SearchPage({ rows }: Props) {
                 ← Sebelumnya
               </button>
 
-              {/* page numbers: hidden on mobile */}
               <div className="hidden sm:flex gap-1">
                 {Array.from({ length: Math.min(7, totalPages) }, (_, i) => {
                   const p = totalPages <= 7 ? i + 1 : page <= 4 ? i + 1 : page >= totalPages - 3 ? totalPages - 6 + i : page - 3 + i
@@ -439,7 +438,6 @@ export default function SearchPage({ rows }: Props) {
                 })}
               </div>
 
-              {/* mobile: just show page count */}
               <span className="sm:hidden text-xs font-medium px-3 py-2 rounded-xl" style={{ background: "var(--surface)", border: "1px solid var(--border)", color: "var(--muted)" }}>
                 {page} / {totalPages}
               </span>

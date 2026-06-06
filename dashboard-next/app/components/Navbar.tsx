@@ -26,7 +26,7 @@ export default function Navbar() {
       <Link href="/" className="flex items-center gap-2.5 shrink-0">
         <div
           className="w-7 h-7 rounded-lg flex items-center justify-center"
-          style={{ background: "linear-gradient(135deg,#4f46e5,#7c3aed)" }}
+          style={{ background: "#4f46e5" }}
         >
           <Trophy size={14} className="text-white" />
         </div>
