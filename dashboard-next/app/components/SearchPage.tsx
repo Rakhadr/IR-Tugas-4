@@ -161,14 +161,14 @@ export default function SearchPage({ rows }: Props) {
         style={{ background: "var(--surface)", border: "1px solid var(--border)", boxShadow: "0 1px 4px rgba(0,0,0,0.05)" }}
       >
         {/* Mode toggle */}
-        <div className="flex items-center gap-3">
-          <p className="text-xs font-medium" style={{ color: "var(--muted)" }}>Mode pencarian:</p>
+        <div className="flex flex-wrap items-center gap-2 md:gap-3">
+          <p className="hidden sm:block text-xs font-medium" style={{ color: "var(--muted)" }}>Mode pencarian:</p>
           <div className="flex rounded-lg overflow-hidden" style={{ border: "1px solid var(--border)" }}>
             {(["bm25", "text"] as const).map((m) => (
               <button
                 key={m}
                 onClick={() => { setMode(m); setQuery(""); setBm25Data(null); setPage(1) }}
-                className="px-4 py-2 text-xs flex items-center gap-1.5 transition-all font-medium"
+                className="px-3 md:px-4 py-2 text-xs flex items-center gap-1.5 transition-all font-medium"
                 style={{
                   background: mode === m ? (m === "bm25" ? "#4f46e5" : "var(--surface2)") : "transparent",
                   color: mode === m ? (m === "bm25" ? "#fff" : "var(--text)") : "var(--muted)",
@@ -179,7 +179,7 @@ export default function SearchPage({ rows }: Props) {
             ))}
           </div>
           {mode === "bm25" && (
-            <span className="text-xs px-2 py-1 rounded-lg" style={{ background: "rgba(79,70,229,0.08)", color: "#4f46e5" }}>
+            <span className="hidden sm:inline text-xs px-2 py-1 rounded-lg" style={{ background: "rgba(79,70,229,0.08)", color: "#4f46e5" }}>
               k₁=1.5 · b=0.75
             </span>
           )}
@@ -290,12 +290,12 @@ export default function SearchPage({ rows }: Props) {
               >
                 {/* card header */}
                 <div
-                  className="flex items-start gap-4 p-4 cursor-pointer"
+                  className="flex items-start gap-3 p-3 md:p-4 cursor-pointer"
                   onClick={() => setExpandedId(isExpanded ? null : r.id)}
                 >
                   {/* rank badge */}
                   <div
-                    className="shrink-0 w-8 h-8 rounded-xl flex items-center justify-center text-xs font-bold"
+                    className="shrink-0 w-7 h-7 md:w-8 md:h-8 rounded-xl flex items-center justify-center text-xs font-bold"
                     style={{
                       background: rank <= 3 ? "#4f46e5" : "var(--surface2)",
                       color: rank <= 3 ? "#fff" : "var(--muted)",
@@ -306,22 +306,30 @@ export default function SearchPage({ rows }: Props) {
 
                   <div className="flex-1 min-w-0 space-y-1.5">
                     {/* nama + sekolah */}
-                    <div className="flex flex-wrap items-center gap-2">
+                    <div className="flex flex-wrap items-center gap-1.5">
                       <span className="text-sm font-semibold" style={{ color: "var(--text)" }}>
                         <Highlight text={r.nama_siswa ?? r.akun ?? "Tidak diketahui"} tokens={tokens} />
                       </span>
                       {r.sekolah && (
-                        <span className="text-xs" style={{ color: "var(--muted)" }}>
+                        <span className="text-xs hidden sm:inline" style={{ color: "var(--muted)" }}>
                           · <Highlight text={r.sekolah} tokens={tokens} />
                         </span>
                       )}
                       {r.provinsi && (
-                        <span className="text-xs" style={{ color: "var(--muted)" }}>· {r.provinsi}</span>
+                        <span className="text-xs hidden sm:inline" style={{ color: "var(--muted)" }}>· {r.provinsi}</span>
                       )}
                     </div>
 
+                    {/* sekolah on mobile (below name) */}
+                    {r.sekolah && (
+                      <p className="text-xs sm:hidden" style={{ color: "var(--muted)" }}>
+                        <Highlight text={r.sekolah} tokens={tokens} />
+                        {r.provinsi && <span> · {r.provinsi}</span>}
+                      </p>
+                    )}
+
                     {/* badges */}
-                    <div className="flex flex-wrap items-center gap-2">
+                    <div className="flex flex-wrap items-center gap-1.5">
                       {r.tingkat && (
                         <span className="text-[11px] px-2 py-0.5 rounded-full font-medium" style={{ background: tingkatStyle.bg, color: tingkatStyle.text }}>
                           {r.tingkat}
@@ -338,7 +346,7 @@ export default function SearchPage({ rows }: Props) {
                         </span>
                       )}
                       {r.tanggal && (
-                        <span className="text-[11px]" style={{ color: "var(--muted)" }}>{r.tanggal.slice(0, 10)}</span>
+                        <span className="text-[11px] hidden sm:inline" style={{ color: "var(--muted)" }}>{r.tanggal.slice(0, 10)}</span>
                       )}
                     </div>
 
@@ -352,7 +360,11 @@ export default function SearchPage({ rows }: Props) {
 
                   {/* score + expand */}
                   <div className="shrink-0 flex flex-col items-end gap-2">
-                    {r._score !== undefined && <ScoreBar score={r._score} max={maxScore} />}
+                    {r._score !== undefined && (
+                      <div className="hidden sm:block">
+                        <ScoreBar score={r._score} max={maxScore} />
+                      </div>
+                    )}
                     <div style={{ color: "var(--muted)" }}>
                       {isExpanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
                     </div>
@@ -404,11 +416,13 @@ export default function SearchPage({ rows }: Props) {
           {totalPages > 1 && (
             <div className="flex items-center justify-center gap-2 pt-2">
               <button onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={page === 1}
-                className="px-4 py-2 rounded-xl text-sm font-medium disabled:opacity-40 transition-colors"
+                className="px-3 md:px-4 py-2 rounded-xl text-sm font-medium disabled:opacity-40 transition-colors"
                 style={{ background: "var(--surface)", border: "1px solid var(--border)", color: "var(--text)" }}>
                 ← Sebelumnya
               </button>
-              <div className="flex gap-1">
+
+              {/* page numbers: hidden on mobile */}
+              <div className="hidden sm:flex gap-1">
                 {Array.from({ length: Math.min(7, totalPages) }, (_, i) => {
                   const p = totalPages <= 7 ? i + 1 : page <= 4 ? i + 1 : page >= totalPages - 3 ? totalPages - 6 + i : page - 3 + i
                   return (
@@ -424,8 +438,14 @@ export default function SearchPage({ rows }: Props) {
                   )
                 })}
               </div>
+
+              {/* mobile: just show page count */}
+              <span className="sm:hidden text-xs font-medium px-3 py-2 rounded-xl" style={{ background: "var(--surface)", border: "1px solid var(--border)", color: "var(--muted)" }}>
+                {page} / {totalPages}
+              </span>
+
               <button onClick={() => setPage((p) => Math.min(totalPages, p + 1))} disabled={page === totalPages}
-                className="px-4 py-2 rounded-xl text-sm font-medium disabled:opacity-40 transition-colors"
+                className="px-3 md:px-4 py-2 rounded-xl text-sm font-medium disabled:opacity-40 transition-colors"
                 style={{ background: "var(--surface)", border: "1px solid var(--border)", color: "var(--text)" }}>
                 Berikutnya →
               </button>

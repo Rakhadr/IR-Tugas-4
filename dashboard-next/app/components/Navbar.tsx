@@ -14,7 +14,7 @@ export default function Navbar() {
 
   return (
     <header
-      className="sticky top-0 z-30 flex items-center gap-6 px-6 py-0"
+      className="sticky top-0 z-30 flex items-center gap-4 px-4 md:px-6 py-0"
       style={{
         background: "var(--surface)",
         borderBottom: "1px solid var(--border)",
@@ -31,12 +31,14 @@ export default function Navbar() {
           <Trophy size={14} className="text-white" />
         </div>
         <span className="text-sm font-bold" style={{ color: "var(--text)" }}>
-          Siswa Berprestasi <span style={{ color: "var(--muted)", fontWeight: 400 }}>2026</span>
+          <span className="hidden sm:inline">Siswa Berprestasi </span>
+          <span className="sm:hidden">SisBer </span>
+          <span style={{ color: "var(--muted)", fontWeight: 400 }}>2026</span>
         </span>
       </Link>
 
-      {/* Nav links */}
-      <nav className="flex items-center gap-1 h-full">
+      {/* Desktop nav links */}
+      <nav className="hidden md:flex items-center gap-1 h-full">
         {LINKS.map(({ href, label, icon: Icon }) => {
           const active = path === href
           return (
@@ -59,15 +61,15 @@ export default function Navbar() {
         })}
       </nav>
 
-      {/* Right badge */}
+      {/* Right */}
       <div className="ml-auto flex items-center gap-2">
         <span
-          className="text-xs px-2.5 py-1 rounded-full font-medium"
+          className="hidden sm:inline text-xs px-2.5 py-1 rounded-full font-medium"
           style={{ background: "rgba(79,70,229,0.08)", color: "var(--accent)" }}
         >
           Information Retrieval
         </span>
-        <span className="text-xs" style={{ color: "var(--muted)" }}>
+        <span className="hidden md:inline text-xs" style={{ color: "var(--muted)" }}>
           914 postingan
         </span>
       </div>
