@@ -37,18 +37,12 @@ function ScoreBar({ score, max }: { score: number; max: number }) {
         <div className="h-full rounded-full" style={{ width: `${pct}%`, background: "#4f46e5" }} />
       </div>
       <span className="text-[11px] font-mono font-semibold" style={{ color: "#4f46e5" }}>
-        {(max > 0 ? score / max : 0).toFixed(3)}
+        {score.toFixed(3)}
       </span>
     </div>
   )
 }
 
-const BADGE: Record<string, string> = {
-  Nasional: "#4f46e5",
-  Internasional: "#db2777",
-  Provinsi: "#2563eb",
-  "Kota/Kabupaten": "#059669",
-}
 
 interface BM25Result { id: string; score: number }
 interface BM25Response {
@@ -231,7 +225,7 @@ export default function SearchPage({ rows }: Props) {
             style={{ background: "rgba(79,70,229,0.05)", border: "1px solid rgba(79,70,229,0.15)" }}
           >
             <Info size={13} style={{ color: "#4f46e5" }} />
-            <span style={{ color: "#4f46e5", fontWeight: 600 }}>BM25 Index</span>
+            <span style={{ color: "#4f46e5", fontWeight: 600 }}>BM25 · cosine similarity</span>
             <span style={{ color: "var(--muted)" }}>
               {bm25Data.stats.docs.toLocaleString("id-ID")} dokumen ·{" "}
               {bm25Data.stats.terms.toLocaleString("id-ID")} term unik ·{" "}
@@ -244,7 +238,7 @@ export default function SearchPage({ rows }: Props) {
               </code>
             ))}
             <span className="ml-auto font-medium" style={{ color: "#4f46e5" }}>
-              {results.length} hasil · top score 1.000
+              {results.length} hasil · top {results[0]?._score?.toFixed(3)}
             </span>
           </div>
         )}

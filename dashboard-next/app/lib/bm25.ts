@@ -39,6 +39,7 @@ export class BM25Index {
   private docs: BM25Doc[]
   private df: Map<string, number>       // document frequency per term
   private idf: Map<string, number>      // precomputed IDF per term
+  private docNorms: Map<string, number> // precomputed TF-IDF L2 norm per doc
   private avgdl: number
   private N: number
 
@@ -47,6 +48,7 @@ export class BM25Index {
     this.N = docs.length
     this.df = new Map()
     this.idf = new Map()
+    this.docNorms = new Map()
 
     // hitung document frequency
     for (const doc of docs) {
@@ -67,6 +69,18 @@ export class BM25Index {
     // average document length
     const total = docs.reduce((sum, d) => sum + d.tokens.length, 0)
     this.avgdl = this.N > 0 ? total / this.N : 1
+
+    // precompute TF-IDF L2 norm per doc (untuk cosine similarity)
+    for (const doc of docs) {
+      const tf = new Map<string, number>()
+      for (const t of doc.tokens) tf.set(t, (tf.get(t) ?? 0) + 1)
+      let norm = 0
+      for (const [t, count] of tf) {
+        const w = (count / doc.tokens.length) * (this.idf.get(t) ?? 0)
+        norm += w * w
+      }
+      this.docNorms.set(doc.id, Math.sqrt(norm))
+    }
   }
 
   search(query: string, topK = 50): SearchResult[] {
@@ -95,10 +109,56 @@ export class BM25Index {
       if (score > 0) scores.set(doc.id, score)
     }
 
-    return Array.from(scores.entries())
-      .map(([id, score]) => ({ id, score: Math.round(score * 1000) / 1000 }))
-      .sort((a, b) => b.score - a.score)
+    const ranked = Array.from(scores.entries())
+      .sort((a, b) => b[1] - a[1])
       .slice(0, topK)
+      .map(([id]) => id)
+
+    // Hitung TF-IDF cosine similarity untuk hasil BM25
+    const cosines = this.cosineScores(query, ranked)
+
+    return ranked.map((id) => ({
+      id,
+      score: Math.round((cosines.get(id) ?? 0) * 1000) / 1000,
+    }))
+  }
+
+  // TF-IDF cosine similarity (0–1) untuk daftar doc ID tertentu
+  cosineScores(query: string, ids: string[]): Map<string, number> {
+    const qTokens = tokenize(query)
+    if (qTokens.length === 0) return new Map()
+
+    // Query: binary TF × IDF
+    const qWeights = new Map<string, number>()
+    let qNorm = 0
+    for (const t of new Set(qTokens)) {
+      const idf = this.idf.get(t) ?? 0
+      qWeights.set(t, idf)
+      qNorm += idf * idf
+    }
+    qNorm = Math.sqrt(qNorm)
+    if (qNorm === 0) return new Map()
+
+    const idSet = new Set(ids)
+    const result = new Map<string, number>()
+
+    for (const doc of this.docs) {
+      if (!idSet.has(doc.id)) continue
+      const tf = new Map<string, number>()
+      for (const t of doc.tokens) tf.set(t, (tf.get(t) ?? 0) + 1)
+
+      let dot = 0
+      for (const [t, qw] of qWeights) {
+        const count = tf.get(t) ?? 0
+        if (count === 0) continue
+        dot += qw * ((count / doc.tokens.length) * (this.idf.get(t) ?? 0))
+      }
+
+      const dNorm = this.docNorms.get(doc.id) ?? 0
+      result.set(doc.id, dNorm === 0 ? 0 : dot / (qNorm * dNorm))
+    }
+
+    return result
   }
 
   stats() {
